@@ -16,7 +16,7 @@ class HTMLTable {
     ToStandard(id: string, ...content: any[]): string {
         return Tag('table',
             Tag('tr', ...this.headers.map(header => Tag('th', { id: `t-${id}-h-${header}` }, header))),
-            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex:number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}` }, cell)))),
+            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex: number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}` }, cell)))),
             ...content);
     }
 }
@@ -50,6 +50,19 @@ class SpiderList {
     AddTodo(title: string, description?: string): void {
         this.todos.push({ Title: title, Description: description, completed: false });
     }
+
+    CheckTodoByTitle(title: string): void {
+        for (let todo of this.todos) {
+            if (todo.Title === title) {
+                todo.completed = true;
+                return;
+            }
+        }
+    }
+
+    CheckTodo(index: number): void {
+        this.todos[index].completed = true;
+    }
 }
 
 let splist = new SpiderList();
@@ -71,3 +84,14 @@ newTodoButton.onclick = () => {
 }
 
 document.body.appendChild(newTodoButton);
+
+let checkTodoButton = document.createElement('button');
+checkTodoButton.innerHTML = 'Check Todo';
+checkTodoButton.onclick = () => {
+    let title = prompt('Title');
+    if (!title) return
+    splist.CheckTodoByTitle(title);
+    spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
+}
+
+document.body.appendChild(checkTodoButton);
