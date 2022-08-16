@@ -13,10 +13,10 @@ class HTMLTable {
         this.rows = [];
     }
 
-    ToStandard(id: string, ...content: any[]): string {
+    ToStandard(id: string, extraArgs?: any[], ...content: any[]): string {
         return Tag('table',
             Tag('tr', ...this.headers.map(header => Tag('th', { id: `t-${id}-h-${header}` }, header))),
-            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex: number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}` }, cell)))),
+            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex: number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}`, ...extraArgs}, cell)))),
             ...content);
     }
 }
