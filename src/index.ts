@@ -6,22 +6,12 @@ class HTMLTable {
         this.rows = [];
     }
 
+    Tag(tag:string, ...content: any[]) { return `<${tag}>${content.join('')}</${tag}>`; }
     ToStandard(): string {
-        let html = '<table>';
-        if (this.headers) {
-            html += '<tr>';
-            for (let header of this.headers)
-                html += `<th>${header}</th>`;
-            html += '</tr>';
-        }
-        for (let row of this.rows) {
-            html += '<tr>';
-            for (let cell of row)
-                html += `<td>${cell}</td>`;
-            html += '</tr>';
-        }
-        html += '</table>';
-        return html;
+        return this.Tag('table', 
+            this.Tag('tr', ...this.headers.map(header => this.Tag('th', header))),
+            ...this.rows.map(row => this.Tag('tr', ...row.map((cell:any) => this.Tag('td', cell))))
+        );
     }
 }
 
