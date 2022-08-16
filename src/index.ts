@@ -13,10 +13,11 @@ class HTMLTable {
         this.rows = [];
     }
 
-    ToStandard(id: string): string {
+    ToStandard(id: string, ...content: any[]): string {
         return Tag('table',
             Tag('tr', ...this.headers.map(header => Tag('th', { id: `t-${id}-h-${header}` }, header))),
-            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex:number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}` }, cell)))));
+            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex:number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}` }, cell)))),
+            ...content);
     }
 }
 
@@ -45,13 +46,28 @@ class SpiderList {
         }
         return table;
     }
+
+    AddTodo(title: string, description?: string): void {
+        this.todos.push({ Title: title, Description: description, completed: false });
+    }
 }
 
-let tlist = new SpiderList();
-tlist.todos.push({ Title: 'Buy milk', completed: false });
-tlist.todos.push({ Title: 'Buy eggs', completed: false });
-tlist.todos.push({ Title: 'Buy bread', completed: false });
-tlist.todos.push({ Title: 'Buy cheese', completed: false });
-let spiderlist = document.createElement('div');
-spiderlist.innerHTML = tlist.Draw().ToStandard('spiderlist');
-document.body.appendChild(spiderlist);
+let splist = new SpiderList();
+splist.todos.push({ Title: 'Buy milk', completed: false });
+splist.todos.push({ Title: 'Buy eggs', completed: false });
+splist.todos.push({ Title: 'Buy bread', completed: false });
+splist.todos.push({ Title: 'Buy cheese', completed: false });
+let spelement = document.createElement('div');
+spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
+document.body.appendChild(spelement);
+let newTodoButton = document.createElement('button');
+newTodoButton.innerHTML = 'New Todo';
+newTodoButton.onclick = () => {
+    let title = prompt('Title');
+    let description = prompt('Description');
+    if (!title) return
+    splist.AddTodo(title, description!);
+    spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
+}
+
+document.body.appendChild(newTodoButton);
