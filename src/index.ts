@@ -1,3 +1,10 @@
+function Tag(tag: string, ...content: any[]) {
+    let attributes = content.filter(x => typeof x === 'object');
+    let contentArray = content.filter(x => typeof x !== 'object');
+    let attributesString = attributes.map(x => Object.keys(x).map(y => `${y}="${x[y]}"`).join(' ')).join(' ');
+    return `<${tag} ${attributesString}>${contentArray.join('')}</${tag}>`;
+}
+
 class HTMLTable {
     headers: string[];
     rows: any[];
@@ -6,11 +13,10 @@ class HTMLTable {
         this.rows = [];
     }
 
-    Tag(tag:string, ...content: any[]) { return `<${tag}>${content.join('')}</${tag}>`; }
     ToStandard(): string {
-        return this.Tag('table', 
-            this.Tag('tr', ...this.headers.map(header => this.Tag('th', header))),
-            ...this.rows.map(row => this.Tag('tr', ...row.map((cell:any) => this.Tag('td', cell))))
+        return Tag('table',
+            Tag('tr', ...this.headers.map(header => Tag('th', header))),
+            ...this.rows.map(row => Tag('tr', ...row.map((cell: any) => Tag('td', cell))))
         );
     }
 }
@@ -34,12 +40,10 @@ class TodoList {
         table.headers = hasDescription ? ['Title', 'Description', 'Completed'] : ['Title', 'Completed'];
         for (let todo of this.todos) {
             if (hasDescription)
-                todo.Description ? table.rows.push([todo.Title, todo.Description, todo.completed]) : table.rows.push([todo.Title," ",todo.completed]);
+                todo.Description ? table.rows.push([todo.Title, todo.Description, todo.completed]) : table.rows.push([todo.Title, "", todo.completed]);
             else
                 table.rows.push([todo.Title, todo.completed]);
         }
-        console.log(table.headers);
-
         return table;
     }
 }
