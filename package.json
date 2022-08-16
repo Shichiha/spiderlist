@@ -1,0 +1,13 @@
+{
+  "name": "spiderlist",
+  "version": "1.0.0",
+  "description": "A simple todo list, learning repository",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --outDir dist",
+    "watch": "tsc --watch --outDir dist"
+  },
+  "keywords": [],
+  "author": "shichihachi",
+  "license": "Unlicense"
+}
