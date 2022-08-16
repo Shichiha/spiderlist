@@ -16,7 +16,7 @@ class HTMLTable {
     ToStandard(id: string, extraArgs?: any[], ...content: any[]): string {
         return Tag('table',
             Tag('tr', ...this.headers.map(header => Tag('th', { id: `t-${id}-h-${header}` }, header))),
-            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex: number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}`, ...extraArgs}, cell)))),
+            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex: number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}`, ...extraArgs }, cell)))),
             ...content);
     }
 }
@@ -40,9 +40,17 @@ class SpiderList {
         table.headers = hasDescription ? ['Title', 'Description', 'Completed'] : ['Title', 'Completed'];
         for (let todo of this.todos) {
             if (hasDescription)
-                todo.Description ? table.rows.push([todo.Title, todo.Description, todo.completed]) : table.rows.push([todo.Title, "", todo.completed]);
+                if (todo.completed)
+                    todo.Description ? table.rows.push([Tag('span', { style: 'color: #90EE90' }, todo.Title), todo.Description, todo.completed]) : table.rows.push([Tag('span', { style: 'color: #90EE90' }, todo.Title), "", todo.completed]);
+                else
+                    todo.Description ? table.rows.push([todo.Title, todo.Description, todo.completed]) : table.rows.push([todo.Title, "", todo.completed]);
+
             else
-                table.rows.push([todo.Title, todo.completed]);
+                if (todo.completed)
+                    table.rows.push([Tag('span', { style: 'color: #90EE90' }, todo.Title), todo.completed]);
+                else
+                    table.rows.push([todo.Title, todo.completed]);
+
         }
         return table;
     }
