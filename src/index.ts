@@ -55,8 +55,8 @@ class SpiderList {
         return table;
     }
 
-    AddTodo(title: string, description?: string): void {
-        this.todos.push({ Title: title, Description: description, completed: false });
+    AddTodo(title: string, completed: boolean, description?: string): void {
+        this.todos.push({ Title: title, Description: description, completed: completed });
     }
 
     CheckTodoByTitle(title: string): void {
@@ -74,10 +74,13 @@ class SpiderList {
 }
 
 let splist = new SpiderList();
-splist.todos.push({ Title: 'Buy milk', completed: false });
-splist.todos.push({ Title: 'Buy eggs', completed: false });
-splist.todos.push({ Title: 'Buy bread', completed: false });
-splist.todos.push({ Title: 'Buy cheese', completed: false });
+for (let i = 0; i < 200; i++) {
+    let title = "";
+    for (let i = 0; i < Math.floor(Math.random() * 10) + 1; i++) {
+        title += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+    }
+    splist.AddTodo(title, Math.random() > 0.5);
+}
 let spelement = document.createElement('div');
 spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
 document.body.appendChild(spelement);
