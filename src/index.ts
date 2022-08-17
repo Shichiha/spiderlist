@@ -1,5 +1,5 @@
-function StringTag(tag: string, ...content: any[]) {return `<${tag} ${content.filter(x => typeof x === 'object').map(x => Object.keys(x).map(y => `${y}="${x[y]}"`).join(' ')).join(' ')}>${content.filter(x => typeof x !== 'object').join('')}</${tag}>`;}
-function DOMElement(tag: string, parent: HTMLElement, ...content: any[]) {
+function StringTag(tag: string, ...content: any[]): string {return `<${tag} ${content.filter(x => typeof x === 'object').map(x => Object.keys(x).map(y => `${y}="${x[y]}"`).join(' ')).join(' ')}>${content.filter(x => typeof x !== 'object').join('')}</${tag}>`;}
+function DOMElement(tag: string, parent: HTMLElement, ...content: any[]): HTMLElement {
     let element = document.createElement(tag);
     content.forEach(x => {
         if (typeof x === 'object') Object.keys(x).forEach(y => element.setAttribute(y, x[y]));
