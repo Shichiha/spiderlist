@@ -1,6 +1,4 @@
-function StringTag(tag: string, ...content: any[]) {
-    return `<${tag} ${content.filter(x => typeof x === 'object').map(x => Object.keys(x).map(y => `${y}="${x[y]}"`).join(' ')).join(' ')}>${content.filter(x => typeof x !== 'object').join('')}</${tag}>`;
-}
+function StringTag(tag: string, ...content: any[]) {return `<${tag} ${content.filter(x => typeof x === 'object').map(x => Object.keys(x).map(y => `${y}="${x[y]}"`).join(' ')).join(' ')}>${content.filter(x => typeof x !== 'object').join('')}</${tag}>`;}
 function DOMElement(tag: string, parent: HTMLElement, ...content: any[]) {
     let element = document.createElement(tag);
     content.forEach(x => {
@@ -10,6 +8,7 @@ function DOMElement(tag: string, parent: HTMLElement, ...content: any[]) {
     parent.appendChild(element);
     return element;
 }
+function GetFunctionBody(func: Function): string {return func.toString().replace(/^[^{]*{\s*/,'').replace(/\s*}[^}]*$/,'')}
 
 class HTMLTable {
     headers: string[];
@@ -69,8 +68,8 @@ intLoop(0, 200, 1, i => {
 });
 
 let SpiderTodoList = DOMElement('div', document.getElementById('todolist-slot')!, splist.Draw().ToStandard('spiderlist'));
-let TodoButton = DOMElement('button', document.getElementById('todolist-slot')!, 'New Todo');
-TodoButton.onclick = () => {
+
+function NewTodo(){
     let title = prompt('Title');
     let description = prompt('Description');
     if (!title) return
@@ -78,10 +77,12 @@ TodoButton.onclick = () => {
     SpiderTodoList.innerHTML = splist.Draw().ToStandard('spiderlist');
 }
 
-let CheckButton = DOMElement('button', document.getElementById('todolist-slot')!, 'Check Todo');
-CheckButton.onclick = () => {
+let TodoButton = DOMElement('button', document.getElementById('todolist-slot')!, 'New Todo', { onclick: GetFunctionBody(NewTodo) });
+
+function Check(){
     let title = prompt('Title');
     if (!title) return
     splist.CheckTodoByTitle(title);
     SpiderTodoList.innerHTML = splist.Draw().ToStandard('spiderlist');
 }
+let CheckButton = DOMElement('button', document.getElementById('todolist-slot')!, 'Check Todo', { onclick: GetFunctionBody(Check) });
