@@ -6,7 +6,7 @@ function DOMElement(tag: string, parent: HTMLElement, ...content: any[]): HTMLEl
     return element;
 }
 function GetFunctionBody(func: Function): string {return func.toString().replace(/^[^{]*{\s*/,'').replace(/\s*}[^}]*$/,'')}
-function intLoop(start: number, end: number, step: number, callback: (i: number) => void) {for (let i = start; i < end; i += step)callback(i);}
+function intLoop(start: number, end: number, step: number, callback: (i: number) => void) {for (let i = start; i < end; i += step)callback(i);} 
 
 class HTMLTable {
     headers: string[];
@@ -43,13 +43,18 @@ class SpiderList {
         this.todos.push({ Title: title, Description: description, completed: completed });
     }
 
-    CheckTodoByTitle(title: string): void {
-        this.todos.forEach(todo => todo.Title === title ? todo.completed = true : null);
+    ToggleTodo(index: number): void {
+        this.todos[index].completed = !this.todos[index].completed;
+        console.log(this.todos[index].completed, !this.todos[index].completed);
+        
     }
 
-    CheckTodo(index: number): void {
-        this.todos[index].completed = true;
+    GetTodo(title: string): Todo | undefined {
+        let index = this.todos.findIndex(todo => todo.Title === title);
+        return index === -1 ? undefined : this.todos[index];
+        
     }
+
 }
 
 let splist = new SpiderList();
@@ -68,10 +73,10 @@ let TodoButton = DOMElement('button', slotElement, 'New Todo', { onclick: GetFun
     splist.AddTodo(title, false, description!);
     SpiderTodoList.innerHTML = splist.Draw().ToStandard('spiderlist');
 })});
-let CheckButton = DOMElement('button', slotElement, 'Check Todo', { onclick: GetFunctionBody(() => {
-    let title = prompt('Title');
-    if (!title) return
-    splist.CheckTodoByTitle(title);
+let ToggleButton = DOMElement('button', slotElement, 'Toggle Todo', { onclick: GetFunctionBody(() => {
+    let title = prompt('Title');if (!title) return
+    let todo = splist.GetTodo(title);if (!todo) return
+    splist.ToggleTodo(splist.todos.indexOf(todo));
     SpiderTodoList.innerHTML = splist.Draw().ToStandard('spiderlist');
 })});
 let RatioButton = DOMElement('button', slotElement, 'Ratio', { onclick: GetFunctionBody(() => {
