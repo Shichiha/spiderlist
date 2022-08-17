@@ -1,8 +1,14 @@
-function Tag(tag: string, ...content: any[]) {
-    let attributes = content.filter(x => typeof x === 'object');
-    let contentArray = content.filter(x => typeof x !== 'object');
-    let attributesString = attributes.map(x => Object.keys(x).map(y => `${y}="${x[y]}"`).join(' ')).join(' ');
-    return `<${tag} ${attributesString}>${contentArray.join('')}</${tag}>`;
+function StringTag(tag: string, ...content: any[]) {
+    return `<${tag} ${content.filter(x => typeof x === 'object').map(x => Object.keys(x).map(y => `${y}="${x[y]}"`).join(' ')).join(' ')}>${content.filter(x => typeof x !== 'object').join('')}</${tag}>`;
+}
+function DOMElement(tag: string, parent: HTMLElement, ...content: any[]) {
+    let element = document.createElement(tag);
+    content.forEach(x => {
+        if (typeof x === 'object') Object.keys(x).forEach(y => element.setAttribute(y, x[y]));
+        else element.innerHTML += x;
+    });
+    parent.appendChild(element);
+    return element;
 }
 
 class HTMLTable {
@@ -14,10 +20,9 @@ class HTMLTable {
     }
 
     ToStandard(id: string, extraArgs?: any[], ...content: any[]): string {
-        return Tag('table',
-            Tag('tr', ...this.headers.map(header => Tag('th', { id: `t-${id}-h-${header}` }, header))),
-            ...this.rows.map((row, index) => Tag('tr', ...row.map((cell: any, columnIndex: number) => Tag('td', { id: `t-${id}-r-${index}-c-${columnIndex}`, ...extraArgs}, cell)))),
-            ...content);
+        return StringTag('table',
+            StringTag('tr', ...this.headers.map(header => StringTag('th', { id: `t-${id}-h-${header}` }, header))),
+            ...this.rows.map((row, index) => StringTag('tr', ...row.map((cell: any, columnIndex: number) => StringTag('td', { id: `t-${id}-r-${index}-c-${columnIndex}`, ...extraArgs }, cell)))), ...content);
     }
 }
 
@@ -38,12 +43,7 @@ class SpiderList {
         let hasDescription = this.todos.some(todo => todo.Description);
         let table = new HTMLTable();
         table.headers = hasDescription ? ['Title', 'Description', 'Completed'] : ['Title', 'Completed'];
-        for (let todo of this.todos) {
-            if (hasDescription)
-                todo.Description ? table.rows.push([todo.Title, todo.Description, todo.completed]) : table.rows.push([todo.Title, "", todo.completed]);
-            else
-                table.rows.push([todo.Title, todo.completed]);
-        }
+        this.todos.forEach(todo => hasDescription ? table.rows.push([todo.Title, todo.Description, todo.completed]) : table.rows.push([todo.Title, todo.completed]));
         return table;
     }
 
@@ -52,12 +52,7 @@ class SpiderList {
     }
 
     CheckTodoByTitle(title: string): void {
-        for (let todo of this.todos) {
-            if (todo.Title === title) {
-                todo.completed = true;
-                return;
-            }
-        }
+        this.todos.forEach(todo => todo.Title === title ? todo.completed = true : null);
     }
 
     CheckTodo(index: number): void {
@@ -66,37 +61,27 @@ class SpiderList {
 }
 
 let splist = new SpiderList();
-for (let i = 0; i < 200; i++) {
+function intLoop(start: number, end: number, step: number, callback: (i: number) => void) {for (let i = start; i < end; i += step)callback(i);}
+intLoop(0, 200, 1, i => {
     let title = "";
-    for (let i = 0; i < Math.floor(Math.random() * 10) + 1; i++) {
-        title += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
-    }
+    intLoop(0, Math.floor(Math.random() * 10) + 1, 1, i => { title += String.fromCharCode(Math.floor(Math.random() * 26) + 97); });
     splist.AddTodo(title, Math.random() > 0.5);
-}
-let spelement = document.createElement('div');
-spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
+});
 
-document.getElementById('todolist-slot')!.appendChild(spelement);
-let newTodoButton = document.createElement('button');
-newTodoButton.innerHTML = 'New Todo';
-newTodoButton.onclick = () => {
+let SpiderTodoList = DOMElement('div', document.getElementById('todolist-slot')!, splist.Draw().ToStandard('spiderlist'));
+let TodoButton = DOMElement('button', document.getElementById('todolist-slot')!, 'New Todo');
+TodoButton.onclick = () => {
     let title = prompt('Title');
     let description = prompt('Description');
     if (!title) return
     splist.AddTodo(title, false, description!);
-    spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
+    SpiderTodoList.innerHTML = splist.Draw().ToStandard('spiderlist');
 }
 
-
-document.getElementById('todolist-slot')!.appendChild(newTodoButton);
-
-let checkTodoButton = document.createElement('button');
-checkTodoButton.innerHTML = 'Check Todo';
-checkTodoButton.onclick = () => {
+let CheckButton = DOMElement('button', document.getElementById('todolist-slot')!, 'Check Todo');
+CheckButton.onclick = () => {
     let title = prompt('Title');
     if (!title) return
     splist.CheckTodoByTitle(title);
-    spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
+    SpiderTodoList.innerHTML = splist.Draw().ToStandard('spiderlist');
 }
-
-document.getElementById('todolist-slot')!.appendChild(checkTodoButton);
