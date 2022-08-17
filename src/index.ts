@@ -75,18 +75,20 @@ for (let i = 0; i < 200; i++) {
 }
 let spelement = document.createElement('div');
 spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
-document.body.appendChild(spelement);
+
+document.getElementById('todolist-slot')!.appendChild(spelement);
 let newTodoButton = document.createElement('button');
 newTodoButton.innerHTML = 'New Todo';
 newTodoButton.onclick = () => {
     let title = prompt('Title');
     let description = prompt('Description');
     if (!title) return
-    splist.AddTodo(title, description!);
+    splist.AddTodo(title, false, description!);
     spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
 }
 
-document.body.appendChild(newTodoButton);
+
+document.getElementById('todolist-slot')!.appendChild(newTodoButton);
 
 let checkTodoButton = document.createElement('button');
 checkTodoButton.innerHTML = 'Check Todo';
@@ -97,4 +99,4 @@ checkTodoButton.onclick = () => {
     spelement.innerHTML = splist.Draw().ToStandard('spiderlist');
 }
 
-document.body.appendChild(checkTodoButton);
+document.getElementById('todolist-slot')!.appendChild(checkTodoButton);
