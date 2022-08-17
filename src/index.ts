@@ -1,22 +1,17 @@
-function StringTag(tag: string, ...content: any[]): string {return `<${tag} ${content.filter(x => typeof x === 'object').map(x => Object.keys(x).map(y => `${y}="${x[y]}"`).join(' ')).join(' ')}>${content.filter(x => typeof x !== 'object').join('')}</${tag}>`;}
+function StringTag(tag: string, ...content: any[]): string {return `<${tag} ${content.filter(_ => typeof _ === 'object').map(_ => Object.keys(_).map(y => `${y}="${_[y]}"`).join(' ')).join(' ')}>${content.filter(_ => typeof _ !== 'object').join('')}</${tag}>`;}
 function DOMElement(tag: string, parent: HTMLElement, ...content: any[]): HTMLElement {
     let element = document.createElement(tag);
-    content.forEach(x => {
-        if (typeof x === 'object') Object.keys(x).forEach(y => element.setAttribute(y, x[y]));
-        else element.innerHTML += x;
-    });
+    content.forEach(_ => {if (typeof _ === 'object') Object.keys(_).forEach(y => element.setAttribute(y, _[y]));else element.innerHTML += _;});
     parent.appendChild(element);
     return element;
 }
 function GetFunctionBody(func: Function): string {return func.toString().replace(/^[^{]*{\s*/,'').replace(/\s*}[^}]*$/,'')}
+function intLoop(start: number, end: number, step: number, callback: (i: number) => void) {for (let i = start; i < end; i += step)callback(i);}
 
 class HTMLTable {
     headers: string[];
     rows: any[];
-    constructor() {
-        this.headers = [];
-        this.rows = [];
-    }
+    constructor(headers: string[], rows: any[]) {this.headers = headers;this.rows = rows;}
 
     ToStandard(id: string, extraArgs?: any[], ...content: any[]): string {
         return StringTag('table',
@@ -40,8 +35,7 @@ class SpiderList {
 
     Draw(): HTMLTable {
         let hasDescription = this.todos.some(todo => todo.Description);
-        let table = new HTMLTable();
-        table.headers = hasDescription ? ['Title', 'Description', 'Completed'] : ['Title', 'Completed'];
+        let table  = new HTMLTable(hasDescription ? ['Title', 'Description', 'Completed'] : ['Title', 'Completed'], this.todos.map(todo => hasDescription ? [todo.Title, todo.Description, todo.completed] : [todo.Title, todo.completed]));
         this.todos.forEach(todo => hasDescription ? table.rows.push([todo.Title, todo.Description, todo.completed]) : table.rows.push([todo.Title, todo.completed]));
         return table;
     }
@@ -60,7 +54,6 @@ class SpiderList {
 }
 
 let splist = new SpiderList();
-function intLoop(start: number, end: number, step: number, callback: (i: number) => void) {for (let i = start; i < end; i += step)callback(i);}
 intLoop(0, 200, 1, i => {
     let title = "";
     intLoop(0, Math.floor(Math.random() * 10) + 1, 1, i => { title += String.fromCharCode(Math.floor(Math.random() * 26) + 97); });
