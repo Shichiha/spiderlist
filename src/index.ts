@@ -69,20 +69,16 @@ intLoop(0, 200, 1, i => {
 
 let SpiderTodoList = DOMElement('div', document.getElementById('todolist-slot')!, splist.Draw().ToStandard('spiderlist'));
 
-function NewTodo(){
+let TodoButton = DOMElement('button', document.getElementById('todolist-slot')!, 'New Todo', { onclick: GetFunctionBody(() => {
     let title = prompt('Title');
     let description = prompt('Description');
     if (!title) return
     splist.AddTodo(title, false, description!);
     SpiderTodoList.innerHTML = splist.Draw().ToStandard('spiderlist');
-}
-
-let TodoButton = DOMElement('button', document.getElementById('todolist-slot')!, 'New Todo', { onclick: GetFunctionBody(NewTodo) });
-
-function Check(){
+})});
+let CheckButton = DOMElement('button', document.getElementById('todolist-slot')!, 'Check Todo', { onclick: GetFunctionBody(() => {
     let title = prompt('Title');
     if (!title) return
     splist.CheckTodoByTitle(title);
     SpiderTodoList.innerHTML = splist.Draw().ToStandard('spiderlist');
-}
-let CheckButton = DOMElement('button', document.getElementById('todolist-slot')!, 'Check Todo', { onclick: GetFunctionBody(Check) });
+})});
