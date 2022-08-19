@@ -16,16 +16,16 @@ class DOME {
     mapContent(element: HTMLElement): void {
         this.content.forEach(_ => { isObject(_) ? Object.keys(_).forEach(y => element.setAttribute(y, _[y])) : element.innerHTML = _; });
     }
-    synthesize(): HTMLElement {
+    synthesize(prepend: Boolean): HTMLElement {
         let element = document.createElement(this.tag);
         this.element = element
         this.mapContent(element)
-        this.parent.appendChild(element);
+        prepend ? this.parent.prepend(element) : this.parent.appendChild(element);
         return element;
     }
 
     alterate(...content: any[]): void {
-        if (this.element == null) {this.synthesize(); return}
+        if (this.element == null) return;
         this.content = content
         let element = this.element
         this.mapContent(element)
@@ -86,33 +86,6 @@ intLoop(0, 4, 1, i => {
 
 let slotElement = document.getElementById('todolist-slot')!
 let SpiderTodoList = new DOME('div', slotElement, splist.Draw().ToStandard('spiderlist'));
-let TodoButton = new DOME('button', slotElement, 'New Todo', {
-    onclick: GetFuncBody(() => {
-        let title = prompt('Title');
-        let description = prompt('Description');
-        if (!title) return
-        splist.AddTodo(title, false, description!);
-        SpiderTodoList.element!.innerHTML = splist.Draw().ToStandard('spiderlist');
-    })
-});
-let ToggleButton = new DOME('button', slotElement, 'Toggle Todo', {
-    onclick: GetFuncBody(() => {
-        let title = prompt('Title'); if (!title) return
-        let todo = splist.GetTodo(title); if (!todo) return
-        splist.switch(splist.todos.indexOf(todo));
-        SpiderTodoList.element!.innerHTML = splist.Draw().ToStandard('spiderlist');
-    })
-});
-let RatioButton = new DOME('button', slotElement, 'Ratio', {
-    onclick: GetFuncBody(() => {
-        let [finished, unfinished] = [0, 0];
-        splist.todos.forEach(todo => todo.completed ? finished++ : unfinished++);
-        alert(`Finished: ${finished} : ${unfinished}\nRatio: ${finished / (finished + unfinished)}`);
-    })
-});
 
-SpiderTodoList.synthesize();
-TodoButton.synthesize();
-ToggleButton.synthesize();
-RatioButton.synthesize()
+SpiderTodoList.synthesize(true);
 

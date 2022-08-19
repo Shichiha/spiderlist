@@ -56,7 +56,24 @@
 </head>
 
 <body>
-    <div id="todolist-slot"> </div>
+    <div id="todolist-slot">
+        <button onclick="let title__ = prompt('Title');
+        let description = prompt('Description');
+        if (!title__)
+            return;
+        splist.AddTodo(title__, false, description);
+        SpiderTodoList.element.innerHTML = splist.Draw().ToStandard('spiderlist');">New Todo</button><button onclick="let title = prompt('Title');
+        if (!title__)
+            return;
+        let todo = splist.GetTodo(title__);
+        if (!todo)
+            return;
+        splist.switch(splist.todos.indexOf(todo));
+        SpiderTodoList.element.innerHTML = splist.Draw().ToStandard('spiderlist');">Toggle Todo</button><button
+            onclick="let [finished, unfinished] = [0, 0];
+        splist.todos.forEach(todo => todo.completed ? finished++ : unfinished++);
+        alert(`Finished: ${finished} : ${unfinished}\nRatio: ${finished / (finished + unfinished)}`);">Ratio</button>
+    </div>
     <script src="./index.js"></script>
 </body>
 
